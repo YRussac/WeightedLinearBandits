@@ -24,6 +24,7 @@ class DLinUCB(object):
             - alpha: tuning the exploration parameter
             - lambda_: regularization parameter
             - s: constant such that L2 norm of theta smaller than s
+            - gamma: discount parameter
             - name: additional suffix when comparing several policies (optional)
             - sm: Should Sherman-Morisson formula be used for inverting matrices ?
             - sigma_noise: square root of the variance of the noise

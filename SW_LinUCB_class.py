@@ -46,6 +46,7 @@ class SWLinUCB(object):
         # build attributes
         self.beta_t = np.sqrt(self.lambda_) * self.s + self.sigma_noise * \
             np.sqrt(self.dim * np.log((1+self.tau/self.lambda_)/self.delta))
+        # Same confidence parameter as in Cheung 1 al. paper
 
         # attributes for the re-init
         self.t = 0

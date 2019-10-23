@@ -26,7 +26,7 @@ This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.i
 <img align="right" width="460" height="370" src="fig/regret_smooth.png">
 
 ### Comments
-One of the main advantage of our method compared to changepoint detection is that the algorithm produces an estimate that is also robust to slowly-varying parameters. In this environment even with a low level of noise, it is hard for an detection algorithm to see the changes. In this experiment, the unknown parameter starts at [0,1] and moves continuously counter-clockwise on the unit-circle up to the position [0,1] in 3000 steps. We then have a 3000 steps steady period.
+One of the main advantage of our method compared to changepoint detection is that the algorithm produces an estimate that is also robust to slowly-varying parameters. In this environment even with a low level of noise, it is hard for a detection algorithm to see the changes. In this experiment that can be found in [this notebook](Experiments/exp_SMOOTH_ENV_NEW.ipynb), the unknown parameter starts at [0,1] and moves continuously counter-clockwise on the unit-circle up to the position [0,1] in 3000 steps. We then have a 3000 steps steady period.
 
 # Contact
 

@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-Definition of the arm class
+Arm class
 """
 
 # Author: Yoan Russac (yoan.russac@ens.fr)
 # License: BSD (3-clause)
 # importation
+
 import numpy as np
 
 

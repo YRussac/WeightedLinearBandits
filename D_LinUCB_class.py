@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    File description: Implementation of the classic LinUCB model
+    File description: Implementation of the D-LinUCB policy presented in the paper
 """
 
 # Author: Yoan Russac (yoan.russac@ens.fr)
@@ -14,9 +14,10 @@ from math import log
 from numpy.linalg import pinv
 
 
-class PolicyLinUCB(object):
-    def __init__(self, d, delta, alpha, lambda_, s, name, sm, sigma_noise, verbose, omniscient=False):
+class DLinUCB(object):
+    def __init__(self, d, delta, alpha, lambda_, s, gamma, name, sm, sigma_noise, verbose):
         """
+        Implementation of the class for the Discounted Linear UCB
         param:
             - d: dimension of the action vectors
             - delta: probability of theta in the confidence bound
@@ -35,27 +36,29 @@ class PolicyLinUCB(object):
         self.dim = d
         self.alpha = alpha
         self.lambda_ = lambda_
+        self.gamma = gamma
         self.name = name
         self.verbose = verbose
         self.sigma_noise = sigma_noise
-        self.sm = sm
-        self.s = s
-        self.omniscient = omniscient
+        self.sm = False  # S-M cannot be used with this model for the moment
+        self.omniscient = False
 
         # build attributes
-        self.c_delta = 2 * log(1 / self.delta)
-        self.const1 = np.sqrt(self.lambda_) * self.s
+        self.c_delta = 2 * log(1 / self.delta)  # first term in square root
 
         # attributes for the re-init
         self.t = 0
         self.hat_theta = np.zeros(self.dim)
         self.cov = self.lambda_ * np.identity(self.dim)
+        self.cov_squared = self.lambda_ * np.identity(self.dim)
         self.invcov = 1 / self.lambda_ * np.identity(self.dim)
         self.b = np.zeros(self.dim)
+        self.s = s
+        self.gamma2_t = 1
 
     def select_arm(self, arms):
         """
-        Selecting an arm according to the LinUCB policy
+        Selecting an arm according to the D-LinUCB policy
         param:
             - arms : list of objects Arm with contextualized features
         Output:
@@ -63,13 +66,15 @@ class PolicyLinUCB(object):
         chosen_arm : index of the pulled arm
         """
         assert type(arms) == list, 'List of arms as input required'
-        kt = len(arms)  # available actions at time t
-        ucb_s = np.zeros(kt)  # upper-confidence bounds for every action
-        beta_t = self.const1 + self.sigma_noise * np.sqrt(self.c_delta + self.dim * log(1 + self.t /
-                                                                                        (self.lambda_ * self.dim)))
+        k_t = len(arms)  # available actions at time t
+        ucb_s = np.zeros(k_t)  # upper-confidence bounds for every action
+        const1 = np.sqrt(self.lambda_) * self.s
+        beta_t = const1 + self.sigma_noise *\
+            np.sqrt(self.c_delta + self.dim * np.log(1 + (1-self.gamma2_t)/(self.dim *
+                    self.lambda_*(1 - self.gamma**2))))
         for (i, a) in enumerate(arms):
             a = a.features
-            invcov_a = np.inner(self.invcov, a.T)
+            invcov_a = np.inner(self.invcov @ self.cov_squared @ self.invcov, a.T)
             ucb_s[i] = np.dot(self.hat_theta, a) + self.alpha * beta_t * np.sqrt(np.dot(a, invcov_a))
         mixer = np.random.random(ucb_s.size)  # Shuffle to avoid always pulling the same arm when ties
         ucb_indices = list(np.lexsort((mixer, ucb_s)))  # Sort the indices
@@ -77,7 +82,7 @@ class PolicyLinUCB(object):
         chosen_arm = output[0]
         if self.verbose:
             # Sanity checks
-            print('--- t:', self.t)
+            print('-- lambda:', self.lambda_)
             print('--- beta_t:', beta_t)
             print('--- theta_hat: ', self.hat_theta)
             print('--- Design Matrix:', self.cov)
@@ -98,38 +103,39 @@ class PolicyLinUCB(object):
         """
         assert isinstance(features, np.ndarray), 'np.array required'
         aat = np.outer(features, features.T)
-        self.cov = self.cov + aat
-        self.b = self.b + reward * features
+        self.gamma2_t *= self.gamma ** 2
+        self.cov = self.gamma * self.cov + aat + (1-self.gamma) * self.lambda_ * np.identity(self.dim)
+        self.cov_squared = self.gamma ** 2 * self.cov + aat + (1-self.gamma**2) * self.lambda_ * np.identity(self.dim)
+        self.b = self.gamma * self.b + reward * features
         if not self.sm:
             self.invcov = pinv(self.cov)
         else:
-            a = features[:, np.newaxis]
-            const = 1 / (1 + np.dot(features, np.inner(self.invcov, features)))
-            const2 = np.matmul(self.invcov, a)
-            self.invcov = self.invcov - const * np.matmul(const2, const2.T)
+            raise NotImplementedError("Method SM is not implemented for D-LinUCB")
         self.hat_theta = np.inner(self.invcov, self.b)
         if self.verbose:
             print('AAt:', aat)
             print('Policy was updated at time t= ' + str(self.t))
-            print('Reward received =', reward)
+            print('Reward received  =', reward)
         self.t += 1
 
     def re_init(self):
         """
-        Re-init function to reinitialize the statistics while keeping the same hyper-parameters
+        Re-init function to reinitialize the statistics while keeping the same hyperparameters
         """
         self.t = 0
         self.hat_theta = np.zeros(self.dim)
         self.cov = self.lambda_ * np.identity(self.dim)
         self.invcov = 1 / self.lambda_ * np.identity(self.dim)
+        self.cov_squared = self.lambda_ * np.identity(self.dim)
         self.b = np.zeros(self.dim)
+        self.gamma2_t = 1
         if self.verbose:
             print('Parameters of the policy reinitialized')
             print('Design Matrix after init: ', self.cov)
 
     def __str__(self):
-        return 'LinUCB' + self.name
+        return 'D-LinUCB' + self.name
 
     @staticmethod
     def id():
-        return 'LinUCB'
+        return 'D-LinUCB'

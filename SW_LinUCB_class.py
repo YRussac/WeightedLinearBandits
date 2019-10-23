@@ -6,6 +6,8 @@
     "Learning to optimize under Non-Stationarity" AISTATS19
 """
 
+# Author: Yoan Russac (yoan.russac@ens.fr)
+# License: BSD (3-clause)
 
 # Importations
 import numpy as np

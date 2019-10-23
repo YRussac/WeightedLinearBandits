@@ -7,8 +7,9 @@ Arm class
 
 # Author: Yoan Russac (yoan.russac@ens.fr)
 # License: BSD (3-clause)
-# importation
 
+
+# importation
 import numpy as np
 
 

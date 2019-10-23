@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-    - author: Yoan Russac
-    - Simulator file used with the exponential weight: w_t = gamma^(-t)
+    Simulator class
 """
 
-# Importation
+# Author: Yoan Russac (yoan.russac@ens.fr)
+# License: BSD (3-clause)
 
+# Importation
 import numpy as np
 import multiprocessing
 from tqdm import tqdm
@@ -17,25 +18,13 @@ from utils import generate_smooth_theta
 class Simulator(object):
     """
     Simulator of stochastic games.
-
-    Params:
-    -------
-    MAB: list
-        List of arms.
-
-    policies: list
-        List of policies to test.
-
-    K: int
-        Number of items (arms) in the pool.
-
-    d: int
-        Dimension of the problem
-
-    T: Number of steps in each round
-
+    param:
+        - MAB: list, List of arms.
+        - policies: list, List of policies to test.
+        - K: int, Number of items (arms) in the pool.
+        - d: int, Dimension of the problem
+        - T: Number of steps in each round
     """
-
     def __init__(self, mab, theta, policies, k, d, steps, bp_dico, verbose):
         """"
         global init function, initializing all the internal parameters that are fixed
@@ -54,14 +43,14 @@ class Simulator(object):
     def from_proxy_dict_to_cumregret(self, regret, n_mc, steps, n_process, t_saved):
         """
         Post-processing of the regret object after the computation on all processors
-        :param regret: Manager dict, this is the object exchanged between the different processors.
-        :param n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
-        n_mc * n_process (int)
-        :param steps: Time horizon for one experiment (int)
-        :param n_process: Number of processors used (int)
-        :param t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
-                        (numpy array ndim = 1)
-        :return:
+        param:
+            - regret: Manager dict, this is the object exchanged between the different processors.
+            - n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
+                    n_mc * n_process (int)
+            - steps: Time horizon for one experiment (int)
+            - n_process: Number of processors used (int)
+            - t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
+                       (numpy array ndim = 1)
         """
         if t_saved is None:
             t_saved = [i for i in range(steps)]
@@ -83,15 +72,17 @@ class Simulator(object):
 
     def simulation_parallel(self, l, steps, n_mc, regret):
         """
-        Function that is launched on a single processor of the machine
-        The MAB is played during the entire trajectory, same function as the run function but with modifications
-        for running on a processor
-        :param l: Number of the processor used (int)
-        :param steps: Time horizon for one experiment (int)
-        :param n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
-        n_mc * n_process (int)
-        :param regret: Manager dict, this is the object exchanged between the different processors.
-        :return: None but regret will contain the result of all the experiments for all the policies launched
+        Function that is launched on a single processor of the machine. The MAB is played during the entire trajectory,
+        same function as the run function but with modifications for running on a processor.
+        param:
+            - l: Number of the processor used (int)
+            - steps: Time horizon for one experiment (int)
+            - n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
+                     n_mc * n_process (int)
+            - regret: Manager dict, this is the object exchanged between the different processors.
+        Output:
+        -------
+        None but regret will contain the result of all the experiments for all the policies launched
         """
         np.random.seed()
         reg_res = np.array([0.] * (steps * n_mc * len(self.policies)))
@@ -128,15 +119,18 @@ class Simulator(object):
         Function that is launched on a single processor of the machine
         The MAB is played during the entire trajectory, same function as the run function but with modifications
         for running on a processor
-        :param l: Number of the processor used (int)
-        :param step_1: Length of sequential allocations with smoothly changing environment (int)
-        :param steps: Time horizon for one experiment (int)
-        :param n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
-        n_mc * n_process (int)
-        :param angle_init: Initial angle for the smoothly changing environment (float)
-        :param angle_end: Final angle for the smoothly changing environment (float)
-        :param regret: Manager dict, this is the object exchanged between the different processors.
-        :return: None but regret will contain the result of all the experiments for all the policies launched
+        param:
+            - l: Number of the processor used (int)
+            - step_1: Length of sequential allocations with smoothly changing environment (int)
+            - steps: Time horizon for one experiment (int)
+            - n_mc: Number of Monte-Carlo launched on a process. The total number of experiment will be
+                    n_mc * n_process (int)
+            - angle_init: Initial angle for the smoothly changing environment (float)
+            - angle_end: Final angle for the smoothly changing environment (float)
+            - regret: Manager dict, this is the object exchanged between the different processors.
+        Output:
+        -------
+        None but regret will contain the result of all the experiments for all the policies launched
         """
         np.random.seed()
         reg_res = np.array([0.] * (steps * n_mc * len(self.policies)))
@@ -164,13 +158,16 @@ class Simulator(object):
     def run_multiprocessing(self, n_process, steps, n_mc, q, t_saved=None):
         """
         Running the experiments on several processors with the use of simulation_parallel function
-        :param n_process: Number of processors used (int)
-        :param steps: Number of steps for an experiment (int)
-        :param n_mc: Total number of Monte Carlo experiment (int)
-        :param q: Quantile (int). ex: q=5%
-        :param t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
+        param:
+            - n_process: Number of processors used (int)
+            - steps: Number of steps for an experiment (int)
+            - n_mc: Total number of Monte Carlo experiment (int)
+            - q: Quantile (int). ex: q=5%
+            - t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
                         (numpy array ndim = 1)
-        :return: regret, lower quantile, upper quantile for every policy
+        Output:
+        -------
+        regret, lower quantile, upper quantile for every policy
         """
         t0 = time.time()
         manager = multiprocessing.Manager()
@@ -201,13 +198,16 @@ class Simulator(object):
     def run_multiprocessing_smooth(self, n_process, step_1, steps, n_mc, R, angle_init, angle_end, q, t_saved=None):
         """
         Running the experiments on several processors with the use of simulation_parallel_smooth function
-        :param n_process: Number of processors used (int)
-        :param steps: Number of steps for an experiment (int)
-        :param n_mc: Total number of Monte Carlo experiment (int)
-        :param q: Quantile (int). ex: q=5%
-        :param t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
+        param:
+            - n_process: Number of processors used (int)
+            - steps: Number of steps for an experiment (int)
+            - n_mc: Total number of Monte Carlo experiment (int)
+            - q: Quantile (int). ex: q=5%
+            - t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
                         (numpy array ndim = 1)
-        :return: regret, lower quantile, upper quantile for every policy
+        Output:
+        -------
+        regret, lower quantile, upper quantile for every policy
         """
         t0 = time.time()
         manager = multiprocessing.Manager()
@@ -237,13 +237,13 @@ class Simulator(object):
     def run(self, steps, n_mc, q, n_scatter, t_saved=None):
         """
         Runs an experiment with steps points and n_mc Monte Carlo repetition
-        :param steps: Number of steps for an experiment (int)
-        :param n_mc: Total number of Monte Carlo experiment (int)
-        :param q: Quantile (int). ex: q=5%
-        :param n_scatter: Frequency of the plot of the estimate for the scatter plot (only in 2D problems)
-        :param t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
+        param:
+            - steps: Number of steps for an experiment (int)
+            - n_mc: Total number of Monte Carlo experiment (int)
+            - q: Quantile (int). ex: q=5%
+            - n_scatter: Frequency of the plot of the estimate for the scatter plot (only in 2D problems)
+            - t_saved: Trajectory of points saved to store fewer than steps points on a trajectory.
                         (numpy array ndim = 1)
-        :return:
         """
         if t_saved is None:
             t_saved = [i for i in range(steps)]
@@ -261,7 +261,6 @@ class Simulator(object):
             timedic[name] = 0
             if self.d == 2:
                 theta_hat[name] = np.zeros((steps // n_scatter, self.d))
-                # theta_true = np.zeros((steps // n_scatter, self.d))
                 action_check = np.zeros((steps // n_scatter, self.k, self.d))
 
         # run n_mc independent simulations
@@ -291,7 +290,6 @@ class Simulator(object):
                         if t % n_scatter == 0:
                             nb_line = t // n_scatter
                             if nExp == 0:
-                                # theta_true[nb_line, :] = self.mab.theta
                                 theta_hat[name][nb_line, :] = policy.hat_theta
                             else:
                                 theta_hat[name][nb_line, :] = 1 / (nExp + 1) * policy.hat_theta + nExp / (nExp + 1) * \
@@ -344,33 +342,16 @@ class Simulator(object):
         are the regret obtained by these policies over the experiments and
         averaged over N runs.
 
-        Parameters
-        ----------
-        step_1: int
-            Length of the sequential allocations with smooth modifications
-
-        steps: int
-            Length of the sequential allocations without modifications
-
-        n_mc: int
-            Number of Monte Carlo repetitions.
-
-        q: int
-            Quantile parameter (e.g. 25 -> quartiles)
-
-        angle_init: float
-            Initial angle for the smoothly changing environment
-
-        angle_end: float
-            Final angle for the smoothly changing environment
-
-        t_saved: numpy array (ndim = 1)
-            Points to save on each trajectory.
-            Index of the points to save
-
-        n_scatter: How frequently we plot the estimate for the scatter plot
-
-        n_scatter_true: How frequently we plot the evolution of the true unknown parameter
+        param:
+            - step_1: int, Length of the sequential allocations with smooth modifications
+            - steps: int, Length of the sequential allocations without modifications
+            - n_mc: int, Number of Monte Carlo repetitions.
+            - q: int, Quantile parameter (e.g. 25 -> quartiles)
+            - angle_init: float, Initial angle for the smoothly changing environment
+            - angle_end: float, Final angle for the smoothly changing environment
+            - t_saved: numpy array (ndim = 1),Points to save on each trajectory. Index of the points to save
+            - n_scatter: How frequently we plot the estimate for the scatter plot
+            - n_scatter_true: How frequently we plot the evolution of the true unknown parameter
         """
         if t_saved is None:
             t_saved = [i for i in range(steps)]

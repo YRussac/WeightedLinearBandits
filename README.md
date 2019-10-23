@@ -10,7 +10,7 @@ The empirical performance of the algorithm is reported in two simulated experime
 
 # Experiments
 
-## Abruptly changing experiment
+## Abruptly changing environment
 
 ### Plots
 <img align="left"  width="350" height="350" src="fig/scatter_abrupt.png">
@@ -18,6 +18,15 @@ The empirical performance of the algorithm is reported in two simulated experime
 
 ### Comments
 This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.ipynb). In this experiment, the unknown parameter is jumping at different places on the unit circle as can be seen on the scatter plot. We compare the regret of the different policies that were implemented. When the environment is highly noisy, the detection algorithm `dLinUCB` created in [*Learning Contextual Bandits in a Non-stationary Environment*](https://arxiv.org/abs/1805.09365) fails to detect changepoints but the `D-LinUCB`and `SW-LinUCB` policies are more robust to those changes. The red dashed lines correspond to the different breakpoints and the blue dashed line is the average detection time of the breakpoint for the `dLinUCB`algorithm.
+
+## Slowly-varying environment
+### Plots
+
+<img align="left"  width="350" height="350" src="fig/scatter_smooth.png">
+<img align="right" width="460" height="370" src="fig/regret_smooth.png">
+
+### Comments
+One of the main advantage of our method compared to changepoint detection is that the algorithm produces an estimate that is also robust to slowly-varying parameters. In this environment even with a low level of noise, it is hard for an detection algorithm to see the changes. In this experiment, the unknown parameter starts at [0,1] and moves continuously counter-clockwise on the unit-circle up to the position [0,1] in 3000 steps. We then have a 3000 steps steady period.
 
 # Contact
 

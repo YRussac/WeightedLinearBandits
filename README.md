@@ -8,3 +8,9 @@ This package implements the `D-LinUCB` algorithm presented in the paper. This al
 
 The empirical performance of the algorithm is reported in two simulated experiments. Those experiments can be easily reproduced by cloning the package, and running the Jupyter notebook in the [Experiment](Experiments/) folder.
 
+# Experiments
+
+## Abruptly changing experiment
+
+This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.ipynb). In this experiment, the unknown parameter is jumping at different places on the unit circle as can be seen on the scatter plot. We compare the regret of the different policies that were implemented. When the environment is highly noise, the detection algorithm `dLinUCB` fails to detect changepoints but the `D-LinUCB`and `SW-LinUCB` policies are more robust to those changes.
+

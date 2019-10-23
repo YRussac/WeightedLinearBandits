@@ -12,8 +12,10 @@ The empirical performance of the algorithm is reported in two simulated experime
 
 ## Abruptly changing experiment
 
+### Plots
 <img align="left"  width="350" height="350" src="fig/scatter_abrupt.png">
 <img align="right" width="460" height="370" src="fig/regret_abrupt.png">
 
+### Comments
 This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.ipynb). In this experiment, the unknown parameter is jumping at different places on the unit circle as can be seen on the scatter plot. We compare the regret of the different policies that were implemented. When the environment is highly noise, the detection algorithm `dLinUCB` fails to detect changepoints but the `D-LinUCB`and `SW-LinUCB` policies are more robust to those changes.
 

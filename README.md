@@ -19,3 +19,6 @@ The empirical performance of the algorithm is reported in two simulated experime
 ### Comments
 This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.ipynb). In this experiment, the unknown parameter is jumping at different places on the unit circle as can be seen on the scatter plot. We compare the regret of the different policies that were implemented. When the environment is highly noisy, the detection algorithm `dLinUCB` created in [*Learning Contextual Bandits in a Non-stationary Environment*](https://arxiv.org/abs/1805.09365) fails to detect changepoints but the `D-LinUCB`and `SW-LinUCB` policies are more robust to those changes. The red dashed lines correspond to the different breakpoints and the blue dashed line is the average detection time of the breakpoint for the `dLinUCB`algorithm.
 
+# Contact
+
+Please contact yoanrussac@ens.fr for any further information.

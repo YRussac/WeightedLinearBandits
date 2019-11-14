@@ -45,6 +45,6 @@ class ArmGaussian(Arm):
     def pull(self, theta, sigma_noise):
         """
         We are in the stochastic setting.
-        The reward is draw according to Normal(dot(A_t,theta),sigma_noise**2)
+        The reward is sampled according to Normal(dot(A_t,theta),sigma_noise**2)
         """
         return np.random.normal(self.get_expected_reward(theta), sigma_noise)

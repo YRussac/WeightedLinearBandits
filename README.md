@@ -28,6 +28,24 @@ This experiment can be found on [this notebook](Experiments/exp_ABRUPT_ENV_NEW.i
 ### Comments
 One of the main advantage of our method compared to changepoint detection is that the algorithm produces an estimate that is also robust to slowly-varying parameters. In this environment even with a low level of noise, it is hard for a detection algorithm to see the changes. In this experiment that can be found in [this notebook](Experiments/exp_SLOW_ENV_NEW.ipynb), the unknown parameter starts at [0,1] and moves continuously counter-clockwise on the unit-circle up to the position [1,0] in 3000 steps. We then have a 3000 steps steady period.
 
+
+# Citation
+Please cite our paper if you use this code in your work.
+```
+@inproceedings{russac:hal-02291460,
+  TITLE = {{Weighted Linear Bandits for Non-Stationary Environments}},
+  AUTHOR = {Russac, Yoan and Vernade, Claire and Capp{\'e}, Olivier},
+  BOOKTITLE = {{NeurIPS 2019 - 33rd Conference on Neural Information Processing Systems}},
+  ADDRESS = {Vancouver, Canada},
+  YEAR = {2019},
+  MONTH = Dec,
+  PDF = {https://hal.inria.fr/hal-02291460/file/main.pdf},
+  HAL_ID = {hal-02291460},
+  HAL_VERSION = {v1},
+}
+```
+
+
 # Contact
 
 Please contact yoanrussac@ens.fr for any further information.
